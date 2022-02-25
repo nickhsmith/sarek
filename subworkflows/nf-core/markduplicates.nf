@@ -41,7 +41,6 @@ workflow MARKDUPLICATES {
 
     // Run Markupduplicates
     GATK4_MARKDUPLICATES(bam_mapped)
-    GATK4_MARKDUPLICATES.out.bam.view()
     // Convert output to cram
     SAMTOOLS_BAM_TO_CRAM_DUPLICATES(GATK4_MARKDUPLICATES.out.bam.join(GATK4_MARKDUPLICATES.out.bai), fasta, fasta_fai)
 

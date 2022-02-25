@@ -25,6 +25,8 @@ workflow GATK4_MAPPING {
 
     // Grouping the bams from the same samples not to stall the workflow
     // Removing unneeded fields in the new_meta map
+    reads.view()
+    BWAMEM1_MEM.out.bam.view()
     bam_mapped = BWAMEM1_MEM.out.bam.mix(BWAMEM2_MEM.out.bam).map{ meta, bam ->
         new_meta = meta.clone()
         new_meta.remove('read_group')
@@ -39,6 +41,7 @@ workflow GATK4_MAPPING {
         tuple(groupKey, new_meta, bam)
     }.groupTuple(by:[0,1]).map{ groupKey, new_meta, bam -> [new_meta, bam] }
 
+    bam_mapped.view()
     // gatk4 markduplicates can handle multiple bams as input, so no need to merge/index here
     // Except if and only if skipping markduplicates or saving mapped bams
 
