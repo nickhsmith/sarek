@@ -335,9 +335,6 @@ workflow SAREK {
         qc_reports  = qc_reports.mix(MARKDUPLICATES.out.qc.collect{it[1]}.ifEmpty([]))
         ch_versions = ch_versions.mix(MARKDUPLICATES.out.versions)
 
-        cram_markduplicates.view()
-        intervals.view()
-        println(num_intervals)
         // STEP 3: Create recalibration tables
         if (!('baserecalibrator' in params.skip_tools)) {
 
