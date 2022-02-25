@@ -264,9 +264,10 @@ workflow GERMLINE_VARIANT_CALLING {
         //TODO: Research if splitting by intervals is ok, we pretend for now it is fine. Seems to be the consensus on upstream modules implementaiton too
 
         MANTA_GERMLINE(
-            cram_recalibrated_intervals_gz_tbi,
+            cram_recalibrated,
             fasta,
-            fasta_fai
+            fasta_fai,
+            intervals_bed_gz_tbi
         )
 
         ch_versions = ch_versions.mix(MANTA_GERMLINE.out.versions)
