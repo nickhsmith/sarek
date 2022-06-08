@@ -103,7 +103,6 @@ vep_genome         = params.vep_genome         ?: Channel.empty()
 vep_species        = params.vep_species        ?: Channel.empty()
 
 // Initialize files channels based on params, not defined within the params.genomes[params.genome] scope
-input_csv          = params.input              ? params.input  : params.step_input
 pon                = params.pon                ? Channel.fromPath(params.pon).collect()                      : Channel.empty()
 snpeff_cache       = params.snpeff_cache       ? Channel.fromPath(params.snpeff_cache).collect()             : []
 //target_bed         = params.target_bed         ? Channel.fromPath(params.target_bed).collect()               : []
@@ -130,8 +129,8 @@ if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && p
 // Initialize value channels based on params, not defined within the params.genomes[params.genome] scope
 umi_read_structure = params.umi_read_structure ? "${params.umi_read_structure} ${params.umi_read_structure}" : Channel.empty()
 
-// Read input csv. Either defined by input or found via the --step params
-ch_input_sample = extract_csv(file(input_csv, checkIfExists: true))
+// Read input csv. defined by config params.input or found via the --step params
+ch_input_sample = extract_csv(file(params.input, checkIfExists: true))
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
