@@ -61,12 +61,6 @@ for (param in checkPathParamList) if (param) file(param, checkIfExists: true)
 //     // }
 // }
 
-println params.input
-f = file(params.input, checkIfExists: true)
-//println f
-ch_input_sample = extract_csv(f)
-
-
 if (params.wes) {
     if (params.intervals && !params.intervals.endsWith("bed")) exit 1, "Target file must be in BED format"
 } else {
@@ -109,6 +103,7 @@ vep_genome         = params.vep_genome         ?: Channel.empty()
 vep_species        = params.vep_species        ?: Channel.empty()
 
 // Initialize files channels based on params, not defined within the params.genomes[params.genome] scope
+input_csv          = params.input              ? params.input  : params.step_input
 pon                = params.pon                ? Channel.fromPath(params.pon).collect()                      : Channel.empty()
 snpeff_cache       = params.snpeff_cache       ? Channel.fromPath(params.snpeff_cache).collect()             : []
 //target_bed         = params.target_bed         ? Channel.fromPath(params.target_bed).collect()               : []
@@ -134,6 +129,9 @@ if (params.spliceai_snv && params.spliceai_snv_tbi && params.spliceai_indel && p
 
 // Initialize value channels based on params, not defined within the params.genomes[params.genome] scope
 umi_read_structure = params.umi_read_structure ? "${params.umi_read_structure} ${params.umi_read_structure}" : Channel.empty()
+
+// Read input csv. Either defined by input or found via the --step params
+ch_input_sample = extract_csv(file(input_csv, checkIfExists: true))
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -837,15 +835,16 @@ workflow SAREK {
         vcf_to_annotate = vcf_to_annotate.mix(GERMLINE_VARIANT_CALLING.out.deepvariant_vcf)
         vcf_to_annotate = vcf_to_annotate.mix(GERMLINE_VARIANT_CALLING.out.freebayes_vcf)
         vcf_to_annotate = vcf_to_annotate.mix(GERMLINE_VARIANT_CALLING.out.haplotypecaller_vcf)
-        vcf_to_annotate = vcf_to_annotate.mix(GERMLINE_VARIANT_CALLING.out.manta_vcf)
+        //vcf_to_annotate = vcf_to_annotate.mix(GERMLINE_VARIANT_CALLING.out.manta_vcf)
         vcf_to_annotate = vcf_to_annotate.mix(GERMLINE_VARIANT_CALLING.out.strelka_vcf)
         vcf_to_annotate = vcf_to_annotate.mix(TUMOR_ONLY_VARIANT_CALLING.out.freebayes_vcf)
         vcf_to_annotate = vcf_to_annotate.mix(TUMOR_ONLY_VARIANT_CALLING.out.mutect2_vcf)
-        vcf_to_annotate = vcf_to_annotate.mix(TUMOR_ONLY_VARIANT_CALLING.out.manta_vcf)
+        //vcf_to_annotate = vcf_to_annotate.mix(TUMOR_ONLY_VARIANT_CALLING.out.manta_vcf)
         vcf_to_annotate = vcf_to_annotate.mix(TUMOR_ONLY_VARIANT_CALLING.out.strelka_vcf)
         vcf_to_annotate = vcf_to_annotate.mix(PAIR_VARIANT_CALLING.out.mutect2_vcf)
-        vcf_to_annotate = vcf_to_annotate.mix(PAIR_VARIANT_CALLING.out.manta_vcf)
+        //vcf_to_annotate = vcf_to_annotate.mix(PAIR_VARIANT_CALLING.out.manta_vcf)
         vcf_to_annotate = vcf_to_annotate.mix(PAIR_VARIANT_CALLING.out.strelka_vcf)
+
 
         // Gather used softwares versions
         ch_versions = ch_versions.mix(GERMLINE_VARIANT_CALLING.out.versions)
