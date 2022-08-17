@@ -83,13 +83,9 @@ workflow GERMLINE_VARIANT_CALLING {
         }
 
     if(tools.split(',').contains('mpileup')){
-        cram_intervals_no_index = cram_recalibrated_intervals
-            .map { meta, cram, crai, intervals ->
-                [meta, cram, intervals]
-            }
-
         RUN_MPILEUP(
-            cram_intervals_no_index,
+            cram_recalibrated_intervals,
+            dict,
             fasta
         )
 

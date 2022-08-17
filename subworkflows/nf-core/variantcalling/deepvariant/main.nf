@@ -34,6 +34,7 @@ workflow RUN_DEEPVARIANT {
 
     // Only when using intervals
 
+    deepvariant_vcf_out.intervals.dump(tag:"DV")
     MERGE_DEEPVARIANT_VCF(
         deepvariant_vcf_out.intervals
             .map{ meta, vcf ->
