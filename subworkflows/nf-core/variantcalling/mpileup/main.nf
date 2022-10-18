@@ -1,5 +1,5 @@
-include { CAT_CAT as CAT_MPILEUP         } from '../../../../modules/nf-core/modules/cat/cat/main'
-include { SAMTOOLS_MPILEUP               } from '../../../../modules/nf-core/modules/samtools/mpileup/main'
+include { CAT_CAT as CAT_MPILEUP         } from '../../../../modules/nf-core/cat/cat/main'
+include { BCFTOOLS_MPILEUP               } from '../../../../modules/nf-core/bcftools/mpileup/main'
 
 workflow RUN_MPILEUP {
     take:
@@ -10,8 +10,8 @@ workflow RUN_MPILEUP {
 
     ch_versions = Channel.empty()
 
-    SAMTOOLS_MPILEUP(cram, fasta)
-    mpileup = SAMTOOLS_MPILEUP.out.mpileup.branch{
+    BCFTOOLS_MPILEUP(cram, fasta, false)
+    mpileup = BCFTOOLS_MPILEUP.out.mpileup.branch{
             intervals:    it[0].num_intervals > 1
             no_intervals: it[0].num_intervals <= 1
         }
@@ -40,7 +40,7 @@ workflow RUN_MPILEUP {
         .groupTuple(sort:true))
 
 
-    ch_versions = ch_versions.mix(SAMTOOLS_MPILEUP.out.versions)
+    ch_versions = ch_versions.mix(BCFTOOLS_MPILEUP.out.versions)
     ch_versions = ch_versions.mix(CAT_MPILEUP.out.versions)
 
     emit:
